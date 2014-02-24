@@ -63,7 +63,6 @@ function addTasks(item) {
 
     $theCheck.click(function(){
       if(!item.done){
-        console.log("Megan is a Jerk!");
         item.done = true;
         $(this).parent().parent().addClass("completed");
       } else {

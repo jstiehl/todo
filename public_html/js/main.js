@@ -1,16 +1,13 @@
 //Add click handler for the button
 
- var tasks = [{Description:"Drink Beer", done: false},
-              {Description:"Watch TV", done: false},
-              {Description:"Read a book", done: false},
-              {Description:"Mow the lawn", done: false},
-              {Description:"Eat dinner", done: false}
-              ];
-
+var taskItems = {};
 
 $(function () { // on ready!
 
-
+  $.getJSON("/api/data", function(data){
+    taskItems = data;
+    renderDetails();
+  });
 
  	$('#submit-btn').click(function(e){
     e.preventDefault();
@@ -25,10 +22,10 @@ $(function () { // on ready!
       done: false
     }
     
-    tasks.push(postData);
+    taskItems.tasks.push(postData);
     addTasks(postData);
 
-    $.post("/api/data", JSON.stringify(tasks), function(data){
+    $.post("/api/data", JSON.stringify(taskItems), function(data){
       console.log("Success!");
     });
   
@@ -36,18 +33,13 @@ $(function () { // on ready!
   }
   });
  
-  // $.getJSON("/api/data", function(data){
-  //   renderDetails(data);
-  // }
-  
-  renderDetails();
 
 });
 
 function renderDetails () {
   $table = $("#to-do-table");
   $("#sample-task").addClass("hidden");
-  tasks.forEach(function(item){
+  taskItems.tasks.forEach(function(item){
     addTasks(item);
   });
 }

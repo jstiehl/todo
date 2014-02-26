@@ -4,10 +4,7 @@ var taskItems = {};
 
 $(function () { // on ready!
 
-  $.getJSON("/api/data", function(data){
-    taskItems = data;
-    renderDetails();
-  });
+
 
  	$('#submit-btn').click(function(e){
     e.preventDefault();
@@ -33,8 +30,16 @@ $(function () { // on ready!
   }
   });
  
+  init();  
 
 });
+
+function init() {
+    $.getJSON("/api/data", function(data){
+    taskItems = data;
+    renderDetails();
+  });
+}
 
 function renderDetails () {
   $table = $("#to-do-table");
@@ -63,8 +68,27 @@ function addTasks(item) {
       }
     });
 
+    // $deleteButton.click(function(){
+    //   $(this).parent().parent().addClass("hidden");
+    //   console.log($(this).parent().prev().text());
+    // });
+  
     $deleteButton.click(function(){
       $(this).parent().parent().addClass("hidden");
+      var remItem = $(this).parent().prev().text();
+      taskItems.tasks.forEach(function(value, index){
+        console.log(value.Description);
+          if(value.Description === remItem){
+            taskItems.tasks.splice(index,1);
+            console.log(taskItems.tasks.splice(index,1));
+          }          
+      });
+    $.post("/api/data", JSON.stringify(taskItems), function(data){
+      console.log("Success!");
     });
-  
+      console.log(taskItems);
+    });
+
+
+
 }

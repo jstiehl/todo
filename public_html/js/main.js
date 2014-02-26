@@ -43,13 +43,14 @@ function init() {
 
 function renderDetails () {
   $table = $("#to-do-table");
-  $("#sample-task").addClass("hidden");
+
   taskItems.tasks.forEach(function(item){
     addTasks(item);
   });
 }
 
-function addTasks(item) {   
+function addTasks(item) { 
+    $("#sample-task").addClass("hidden");  
     $row = $('<tr></tr>');
     $cell = $('<td></td>');
     $theCheck = $('<input type=\"checkbox\">');
@@ -83,12 +84,15 @@ function addTasks(item) {
             console.log(taskItems.tasks.splice(index,1));
           }          
       });
+
+      if (taskItems.tasks.length === 0){
+          $("#sample-task").removeClass("hidden");
+      }
+
     $.post("/api/data", JSON.stringify(taskItems), function(data){
       console.log("Success!");
     });
       console.log(taskItems);
     });
-
-
 
 }

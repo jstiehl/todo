@@ -22,10 +22,10 @@ $(function () { // on ready!
     taskItems.tasks.push(postData);
     addTasks(postData);
 
-    $.post("/api/data", JSON.stringify(taskItems), function(data){
+    $.post("/api/data", postData.Description, function(data){
       console.log("Success!");
     });
-  
+
     $("#exampleInputTask").val('');
   }
   });

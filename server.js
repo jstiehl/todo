@@ -2,17 +2,60 @@ var http = require('http');
 var url  = require('url');
 var path = require('path');
 var fs   = require('fs');
+var Parse = require('parse/node').Parse;
 
 var mime = require('mime');
 
 var server = http.createServer(router).listen(7357);
+
+//PARSE FUN
+Parse.initialize("D7copRkkZPKmIbFvELzkaxwGAp95DRSyvbOJa7Z5", "rl4dixTWclxNLVMXWPkxliUN9vU9A6mEMM4lMKpc");
+
+// Sample of looping through parse user list
+/*
+ var query = new Parse.Query(Parse.user);
+ query.find({
+ success: function(usernameers) {
+ for (var i = 0; i < users.length; ++i) {
+ console.log(users[i].get('username'));
+ }
+ }
+ });
+ */
+/*
+ //sample of querying for specific user
+ var query = new Parse.Query(Parse.User);
+ var ParseUser = new Parse.User
+ query.equalTo("username", "James");  // find all the women
+ query.find({
+ success: function(user) {
+ // Do stuff
+ if (user.length > 0){
+
+ ParseUser = user[0];
+
+ }
+
+ console.log(ParseUser.username);
+ /*
+ for (var i = 0; i < user.length; i++) {
+ var object = user[i];
+ console.log(object.id + ' - ' + object.createdAt);
+ }
+
+
+
+ }
+ });
+
+ */
 
 function router (req, res) {
   var pathname = url.parse(req.url, true).pathname;
   if (pathname.slice(0, 4) === '/api') {
     apiHandler(req, res);
   } else {
-    if (pathname[pathname.length - 1] === '/') 
+    if (pathname[pathname.length - 1] === '/')
       pathname += 'index.html';
     staticFileHandler(pathname, res);
   }
@@ -39,12 +82,48 @@ function errHandler (err, res) {
 
 function apiHandler (req, res) {
   if (req.method === 'GET') {
+    //send back a list of todos
+   // var toDo = new Parse.Object("ToDo");
+
+    var parseQuery = new Parse.Query("ToDo");
+
+    parseQuery.find({
+
+      error: function(toDoList, error) {
+      // error is an instance of Parse.Error.
+      console.log(error.message);
+    }
+    });
+
+    parseQuery.count({
+      success: function(number) {
+        for (var i = 1; i <= number; i++) {
+          console.log(parseQuery[i].get("ToDoName"));
+        }
+      }
+    });
+
+
+
+    /*
+        parseQuery.get('rPw9e0sUvY', {
+      success: function(toDo) {
+        // object is an instance of Parse.Object.
+        console.log(toDo.get("ToDoName"));
+      },
+
+      error: function(toDo, error) {
+        // error is an instance of Parse.Error.
+        console.log(error.message);
+      }
+    });
+*/
     var pathname = url.parse(req.url).pathname
     if (pathname === '/api/data') {
       fs.readFile("data/data.json", {encoding: 'utf8'}, function(err,data){
         if(err) return errHandler(err,res);
         try {
-        data = JSON.stringify(JSON.parse(data)); // this will check to make sure json file is formatted correctly
+          data = JSON.stringify(JSON.parse(data)); // this will check to make sure json file is formatted correctly
         } catch (err){
           data = "{\"name\":\"Error\", \"email\":[\"error@error.error\"]}";
         }
@@ -56,9 +135,32 @@ function apiHandler (req, res) {
       res.end();
     }
   } else if (req.method === "POST"){
-    req.pipe(fs.createWriteStream('data/data.json'));
+
+    var body = "";
+    req.on('data', function (chunk) {
+      body += chunk;
+    });
+
+    req.on('end', function () {
+      var toDo = new Parse.Object("ToDo");
+      toDo.set('ToDoName', body);
+      toDo.set('Done', false);
+      toDo.save(null, {
+        success: function(toDo) {
+          // Execute any logic that should take place after the object is saved.
+          console.log('New object created with objectId: ' + toDo.id);
+        },
+        error: function(toDo, error) {
+          // Execute any logic that should take place if the save fails.
+          // error is a Parse.Error with an error code and message.
+          console.log('Failed to create new object, with error code: ' + error.message);
+        }
+      });
+    });
+
     res.end();
   }
+
 }
 
 

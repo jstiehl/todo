@@ -6,51 +6,56 @@ $(function () { // on ready!
 
 
 
- 	$('#submit-btn').click(function(e){
-    e.preventDefault();
+    $('#submit-btn').click(function(e){
+        e.preventDefault();
 
-    var newTask = $("#exampleInputTask").val();
-    if (newTask === ''){
-      alert("No task was entered");
-    } else {
-    
-    var postData = {
-      Description: newTask,
-      done: false
-    }
-    
-    taskItems.tasks.push(postData);
-    addTasks(postData);
+        var newTask = $("#exampleInputTask").val();
+        if (newTask === ''){
+            alert("No task was entered");
+        } else {
 
-    $.post("/api/data", postData.Description, function(data){
-      console.log("Success!");
+            var postData = {
+                Description: newTask,
+                done: false
+            }
+
+            taskItems.push(postData);
+            addTasks(postData);
+
+            $.post("/api/data", postData.Description, function(data){
+                console.log("Success!");
+            });
+
+            $("#exampleInputTask").val('');
+        }
     });
 
-    $("#exampleInputTask").val('');
-  }
-  });
- 
-  init();  
+    init();
 
 });
 
 function init() {
+
     $.getJSON("/api/data", function(data){
-    taskItems = data;
-    renderDetails();
-  });
+        taskItems = data;
+        renderDetails();
+    });
 }
 
 function renderDetails () {
-  $table = $("#to-do-table");
+    $table = $("#to-do-table");
 
-  taskItems.tasks.forEach(function(item){
-    addTasks(item);
-  });
+    taskItems.forEach(function(taskItem){
+        addTasks(taskItem)
+    });
+
+    /*taskItems.tasks.forEach(function(item){
+     addTasks(item);
+     });*/
 }
 
-function addTasks(item) { 
-    $("#sample-task").addClass("hidden");  
+function addTasks(item) {
+    $("#sample-task").addClass("hidden");
     $row = $('<tr></tr>');
     $cell = $('<td></td>');
     $theCheck = $('<input type=\"checkbox\">');
@@ -60,33 +65,33 @@ function addTasks(item) {
     $row.append($('<td></td>').append($deleteButton));
 
     $theCheck.click(function(){
-      if(!item.done){
-        item.done = true;
-        $(this).parent().parent().addClass("completed");
-      } else {
-        item.done = false;
-        $(this).parent().parent().removeClass("completed");
-      }
+        if(!item.done){
+            item.done = true;
+            $(this).parent().parent().addClass("completed");
+        } else {
+            item.done = false;
+            $(this).parent().parent().removeClass("completed");
+        }
     });
-  
+
     $deleteButton.click(function(){
-      $(this).parent().parent().remove();
-      var remItem = $(this).parent().prev().text();
-      taskItems.tasks.forEach(function(value, index){
+        $(this).parent().parent().remove();
+        var remItem = $(this).parent().prev().text();
+        taskItems.tasks.forEach(function(value, index){
 
-          if(value.Description === remItem){
-            taskItems.tasks.splice(index,1);
-            return 0;
-          }          
-      });
+            if(value.Description === remItem){
+                taskItems.tasks.splice(index,1);
+                return 0;
+            }
+        });
 
-      if (taskItems.tasks.length === 0){
-          $("#sample-task").removeClass("hidden");
-      }
+        if (taskItems.tasks.length === 0){
+            $("#sample-task").removeClass("hidden");
+        }
 
-    $.post("/api/data", JSON.stringify(taskItems), function(data){
-      console.log("Success!");
-    });
+        $.post("/api/data", JSON.stringify(taskItems), function(data){
+            console.log("Success!");
+        });
 
     });
 

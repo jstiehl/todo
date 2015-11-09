@@ -83,57 +83,19 @@ function errHandler (err, res) {
 function apiHandler (req, res) {
   if (req.method === 'GET') {
     //send back a list of todos
-   // var toDo = new Parse.Object("ToDo");
-
+    // var toDo = new Parse.Object("ToDo");
     var parseQuery = new Parse.Query("ToDo");
-
     parseQuery.find({
-
-      error: function(toDoList, error) {
-      // error is an instance of Parse.Error.
-      console.log(error.message);
-    }
-    });
-
-    parseQuery.count({
-      success: function(number) {
-        for (var i = 1; i <= number; i++) {
-          console.log(parseQuery[i].get("ToDoName"));
-        }
-      }
-    });
-
-
-
-    /*
-        parseQuery.get('rPw9e0sUvY', {
-      success: function(toDo) {
-        // object is an instance of Parse.Object.
-        console.log(toDo.get("ToDoName"));
+      success: function(toDoList){
+          res.setHeader('Content-Type', mime.lookup('json'));
+        res.end(JSON.stringify(toDoList));
       },
-
-      error: function(toDo, error) {
+      error: function(toDoList, error) {
         // error is an instance of Parse.Error.
-        console.log(error.message);
+        console.log('Error encountered while getting Parse objects: ' + error.message);
       }
     });
-*/
-    var pathname = url.parse(req.url).pathname
-    if (pathname === '/api/data') {
-      fs.readFile("data/data.json", {encoding: 'utf8'}, function(err,data){
-        if(err) return errHandler(err,res);
-        try {
-          data = JSON.stringify(JSON.parse(data)); // this will check to make sure json file is formatted correctly
-        } catch (err){
-          data = "{\"name\":\"Error\", \"email\":[\"error@error.error\"]}";
-        }
-        res.setHeader('Content-Type', mime.lookup('json'));
-        res.end(data);
-      });
-    } else {
-      res.statusCode = 404;
-      res.end();
-    }
+
   } else if (req.method === "POST"){
 
     var body = "";
@@ -143,7 +105,7 @@ function apiHandler (req, res) {
 
     req.on('end', function () {
       var toDo = new Parse.Object("ToDo");
-      toDo.set('ToDoName', body);
+      toDo.set('Description', body);
       toDo.set('Done', false);
       toDo.save(null, {
         success: function(toDo) {

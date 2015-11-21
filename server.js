@@ -7,6 +7,44 @@ var mime = require('mime');
 var server = http.createServer(router).listen(process.env.PORT || 5000);
 Parse.initialize("D7copRkkZPKmIbFvELzkaxwGAp95DRSyvbOJa7Z5", "rl4dixTWclxNLVMXWPkxliUN9vU9A6mEMM4lMKpc");
 
+// Sample of looping through parse user list
+/*
+ var query = new Parse.Query(Parse.user);
+ query.find({
+ success: function(usernameers) {
+ for (var i = 0; i < users.length; ++i) {
+ console.log(users[i].get('username'));
+ }
+ }
+ });
+ */
+/*
+ //sample of querying for specific user
+ var query = new Parse.Query(Parse.User);
+ var ParseUser = new Parse.User
+ query.equalTo("username", "James");  // find all the women
+ query.find({
+ success: function(user) {
+ // Do stuff
+ if (user.length > 0){
+
+ ParseUser = user[0];
+
+ }
+
+ console.log(ParseUser.username);
+ /*
+ for (var i = 0; i < user.length; i++) {
+ var object = user[i];
+ console.log(object.id + ' - ' + object.createdAt);
+ }
+
+
+
+ }
+ });
+
+ */
 
 function router (req, res) {
   var pathname = url.parse(req.url, true).pathname;

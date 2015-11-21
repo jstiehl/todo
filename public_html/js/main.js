@@ -77,8 +77,9 @@ function addTasks(item) {
     $deleteButton.click(function(){
         $(this).parent().parent().remove();
         var remItem = $(this).parent().prev().text();
-        taskItems.tasks.forEach(function(value, index){
 
+        taskItems.tasks.forEach(function(value, index){
+            console.log(taskItems.tasks.length);
             if(value.Description === remItem){
                 taskItems.tasks.splice(index,1);
                 return 0;

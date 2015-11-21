@@ -9,6 +9,8 @@
   "author": "David Manning",
   "license": "ISC",
   "dependencies": {
-    "mime": "~1.2.11"
+    "googleapis": "^2.1.6",
+    "mime": "~1.2.11",
+    "moment": "^2.10.6"
   }
 }
